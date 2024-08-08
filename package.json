@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,12 @@
   },
   "homepage": "https://github.com/GabrielUleia/FilterGmail#readme",
   "dependencies": {
-    "common-lib": "github:GabrielUleia/common-lib"
+    "common-lib": "github:GabrielUleia/common-lib",
+    "tsc": "^2.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
   }
 }
