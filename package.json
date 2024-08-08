@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/GabrielUleia/FilterGmail/issues"
   },
-  "homepage": "https://github.com/GabrielUleia/FilterGmail#readme"
+  "homepage": "https://github.com/GabrielUleia/FilterGmail#readme",
+  "dependencies": {
+    "common-lib": "github:GabrielUleia/common-lib"
+  }
 }
