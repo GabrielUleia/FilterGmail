@@ -1,22 +1,47 @@
 import * as http from 'http'
+import { google } from 'googleapis'
+import nodemailer from 'nodemailer'
 
-const PORT = 8000
+const CLIENT_ID = ''
+const CLIENT_SECRET = ''
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground'
+const REFRESH_TOKEN = ''
 
-const server = http.createServer((req, res) => {
-    
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 
-    if (req.url === '/') {
-        console.log('URL was: ' + req.url)
-        console.log('HTTP method was: ' + req.method)
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN })
 
-        res.writeHead(200, {'Content-Type': 'text/html'})
-        res.end('<h1>This is the HOME page</h1>')
-    } else {
-        res.writeHead(404, {'Content-Type': 'text/html'})
-        res.end('<h1>Sorry, but the page you&apos;re looking for doesn&apos;t exist</h1>')
+async function sendMail() {
+    try {
+        const accessToken = await oAuth2Client.getAccessToken()
+
+        const transport = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: 'catalinbadila23@gmail.com',
+                clientId: CLIENT_ID,
+                clientSecret: CLIENT_SECRET,
+                refreshToken: REFRESH_TOKEN,
+                accessToken: accessToken
+            }
+        })
+
+        const mailOptions = {
+            from: 'catalinbadila23@gmail.com', // alternative format: 'John Doe <johndoe@gmail.com>'
+            to: 'catalinbadila23@gmail.com',
+            subject: 'Email subject',
+            text: 'This is just a text placeholder.',
+            html: '<h1>This is a text placeholder.</h1>', // optional: You can provide the HTML version of your email - this allows for rich formatting, including images, links, fonts, colors and layouts.
+        }
+
+        const result = await transport.sendMail(mailOptions)
+        return result
+        
+    } catch (error) {
+        return error
     }
-})
+}
 
-server.listen(PORT, () => {
-    console.log(`This server is running on the port: ${PORT}`)
-})
+sendMail().then(result => console.log('Email sent!', result))
+.catch(error => console.log(error.message))
