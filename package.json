@@ -20,6 +20,7 @@
   "homepage": "https://github.com/GabrielUleia/FilterGmail#readme",
   "dependencies": {
     "common-lib": "github:GabrielUleia/common-lib",
+    "http-server": "^14.1.1",
     "tsc": "^2.0.4"
   },
   "devDependencies": {
