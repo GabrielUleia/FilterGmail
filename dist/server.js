@@ -13,7 +13,7 @@ async function sendMail() {
             service: 'gmail',
             auth: {
                 type: 'OAuth2',
-                user: 'catalinbadila23@gmail.com',
+                user: 'johndoe@gmail.com',
                 clientId: CLIENT_ID,
                 clientSecret: CLIENT_SECRET,
                 refreshToken: REFRESH_TOKEN,
@@ -21,8 +21,8 @@ async function sendMail() {
             }
         });
         const mailOptions = {
-            from: 'catalinbadila23@gmail.com', // alternative format: 'John Doe <johndoe@gmail.com>'
-            to: 'catalinbadila23@gmail.com',
+            from: 'johndoe@gmail.com', // alternative format: 'John Doe <johndoe@gmail.com>'
+            to: 'example@gmail.com',
             subject: 'Email subject',
             text: 'This is just a text placeholder.',
             html: '<h1>This is a text placeholder.</h1>', // optional: You can provide the HTML version of your email - this allows for rich formatting, including images, links, fonts, colors and layouts.
