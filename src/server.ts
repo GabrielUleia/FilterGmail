@@ -1,6 +1,7 @@
 import * as http from 'http'
 import { google } from 'googleapis'
 import nodemailer from 'nodemailer'
+import { createTransport, TransportOptions } from 'nodemailer'
 
 const CLIENT_ID = ''
 const CLIENT_SECRET = ''
@@ -26,7 +27,7 @@ async function sendMail() {
                 refreshToken: REFRESH_TOKEN,
                 accessToken: accessToken
             }
-        })
+        } as TransportOptions)
 
         const mailOptions = {
             from: 'johndoe@gmail.com', // alternative format: 'John Doe <johndoe@gmail.com>'
