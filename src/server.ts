@@ -3,6 +3,7 @@ import { config } from 'dotenv'
 import { google } from 'googleapis'
 import nodemailer from 'nodemailer'
 import { createTransport, TransportOptions } from 'nodemailer'
+import messagesFilterOptions from './messagesFilterOptions.json' assert { type: 'json'}
 
 // load variables from .env into process.env
 config()
@@ -55,9 +56,9 @@ async function filterEmails() {
         const gmail = google.gmail({ version: 'v1', auth: oAuth2Client })
 
         const res = await gmail.users.messages.list({
-            userId: 'me',
-            q: 'from:johndoe@gmail.com subject:email after:2024/08/12', // add filter query
-            maxResults: 3, // limit the number of results
+            userId: messagesFilterOptions.userId,
+            q: `from:${messagesFilterOptions.q.from} subject:${messagesFilterOptions.q.subject} after:${messagesFilterOptions.q.after}`, // add filter query
+            maxResults: messagesFilterOptions.maxResults, // limit the number of results
         })
 
         const messages = res.data.messages
