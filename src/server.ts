@@ -13,8 +13,8 @@ import messagesFilterOptions from '../messagesFilterOptions.json' assert { type:
 config()
 
 // Define __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET
@@ -76,11 +76,36 @@ async function filterEmails() {
             return
         }
 
-        console.log('Messages:', messages)
+        // accumulate email details into an array
+        const allEmailDetails = []
 
+        // save email details for all emails that pass the filter
         for (let message of messages) {
             let msg = await gmail.users.messages.get({ userId: 'me', id: message.id as string })
             console.log(`Message snippet: ${msg.data.snippet}`)
+
+            // collect details from the email
+            const headers = msg.data.payload?.headers || []
+            const emailDetails = {
+                id: msg.data.id,
+                snippet: msg.data.snippet,
+                subject: headers.find(header => header.name === 'Subject')?.value || 'No Subject',
+                from: headers.find(header => header.name === 'From')?.value || 'Unknown Sender',
+                date: headers.find(header => header.name === 'Date')?.value || 'No Date',
+            }
+
+            // add email details to the array
+            allEmailDetails.push(emailDetails)
+        }
+
+        // save emails' details to a JSON file
+        const allEmailsJsonFilePath = path.join(__dirname, 'filteredEmails.json')
+        fs.writeFileSync(allEmailsJsonFilePath, JSON.stringify(allEmailDetails, null, 2))
+        console.log(`All email details saved to ${allEmailsJsonFilePath}`)
+
+        // handle attachments for all filtered emails
+        for (let message of messages) {
+            let msg = await gmail.users.messages.get({ userId: 'me', id: message.id as string })
 
             // check for attachments in the message payload
             const parts = msg.data.payload?.parts
@@ -89,14 +114,14 @@ async function filterEmails() {
                     if (part.filename && part.body && part.body.attachmentId) {
 
                         // attachment found
-                        const attachmentId = part.body.attachmentId
+                        const attachmentId = part.body.attachmentId;
                         const attachment = await gmail.users.messages.attachments.get({
-                            userId: messagesFilterOptions.userId,
+                            userId: 'me',
                             messageId: message.id as string,
                             id: attachmentId
                         })
 
-                        const attachmentData = (await attachment).data?.data
+                        const attachmentData = attachment.data?.data
 
                         if (attachmentData) {
 
@@ -109,7 +134,7 @@ async function filterEmails() {
                             console.log(`Attachment saved to ${filePath}`)
 
                             // stop after downloading the first attachment
-                            return
+                            return // DELETE this 'return' statement if you want to download all the attachments from the filtered emails, not just the first
                         }
                     }
                 }
