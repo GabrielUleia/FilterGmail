@@ -1,9 +1,16 @@
 import { config } from 'dotenv';
 import { google } from 'googleapis';
 import nodemailer from 'nodemailer';
-import messagesFilterOptions from './messagesFilterOptions.json' assert { type: 'json' };
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import messagesFilterOptions from '../messagesFilterOptions.json' assert { type: 'json' };
 // load variables from .env into process.env
 config();
+// Define __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
@@ -58,6 +65,32 @@ async function filterEmails() {
         for (let message of messages) {
             let msg = await gmail.users.messages.get({ userId: 'me', id: message.id });
             console.log(`Message snippet: ${msg.data.snippet}`);
+            // check for attachments in the message payload
+            const parts = msg.data.payload?.parts;
+            if (parts) {
+                for (let part of parts) {
+                    if (part.filename && part.body && part.body.attachmentId) {
+                        // attachment found
+                        const attachmentId = part.body.attachmentId;
+                        const attachment = await gmail.users.messages.attachments.get({
+                            userId: messagesFilterOptions.userId,
+                            messageId: message.id,
+                            id: attachmentId
+                        });
+                        const attachmentData = (await attachment).data?.data;
+                        if (attachmentData) {
+                            // decode string from base64
+                            const decodedAttachment = Buffer.from(attachmentData, 'base64');
+                            // save the attachment
+                            const filePath = path.join(__dirname, part.filename);
+                            fs.writeFileSync(filePath, decodedAttachment);
+                            console.log(`Attachment saved to ${filePath}`);
+                            // stop after downloading the first attachment
+                            return;
+                        }
+                    }
+                }
+            }
         }
     }
     catch (error) {
@@ -67,6 +100,6 @@ async function filterEmails() {
 // call the function to send mail with provided options
 // sendMail().then(result => console.log('Email sent!', result))
 // .catch(error => console.log(error.message))
-// filter emails using the filters added inside 'res'
+// filter emails using the filters added inside 'res' and download attachments (if there are any)
 filterEmails();
 //# sourceMappingURL=server.js.map
