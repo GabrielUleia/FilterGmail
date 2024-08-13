@@ -1,9 +1,36 @@
 {
+    "_comment_general": "// This JSON is the input file for the filters used inside the filterEmails function located inside server.ts.",
+
+    "_comment_general_two": "// Below you can find filtering options that can be included before calling filterEmails.",
+
+    "_comment_general_three": "// All the properties below that start with _ are just comments for the next line and should not be accessed inside the project.",
+
+    "_comment_general_four": "// If you want to add a new filter, for example 'cc', replace the placeholder (user@example.com in this case), then go in server.ts and add cc:${messagesFilterOptions.q.cc} anywhere inside the string stored on q key, on line 68.",
+
     "userId": "me",
     "q": {
+        "_comment_from": "// Specify the sender",
         "from": "catalinbadila23@gmail.com",
+
+        "_comment_to": "// Specify a recipient",
+        "to": "user@example.com",
+
+        "_comment_cc_bcc": "// Recipients in the CC or BCC field",
+        "cc": "user@example.com",
+        "bcc": "user@example.com",
+
+        "_comment_subject": "// Words in the subject line",
         "subject": "email",
+
+        "_comment_before": "// Search for messages sent before a certain date. Provide a date using the following format: YYYY/MM/DD ",
+        "before": "2024/12/01",
+
+        "_comment_after": "// Search for messages sent after a certain date. Provide a date using the following format: YYYY/MM/DD",
         "after": "2024/08/01"
     },
-    "maxResults": 10
+
+    "_comment_maxResults": "// Limit the number of results that will be displayed.",
+    "maxResults": 10,
+
+    "_comment_other_search_operators": "https://support.google.com/mail/answer/7190 - Here you can find all the search operators that you can use."
 }
